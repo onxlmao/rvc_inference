@@ -4,8 +4,6 @@ import shutil
 import urllib.request
 import zipfile
 from argparse import ArgumentParser
-from gradio.themes.base import Base
-from gradio.themes.utils import colors, fonts, sizes
 
 import gradio as gr
 from src.main import song_cover_pipeline
@@ -237,49 +235,9 @@ def build_upload_tab():
 
 # ---------------- Main Function ----------------
 
-# Define the Seafoam theme by extending the Base theme
-class Seafoam(Base):
-    def __init__(
-        self,
-        *,
-        primary_hue: colors.Color | str = colors.emerald,
-        secondary_hue: colors.Color | str = colors.blue,
-        neutral_hue: colors.Color | str = colors.gray,
-        spacing_size: sizes.Size | str = sizes.spacing_md,
-        radius_size: sizes.Size | str = sizes.radius_md,
-        text_size: sizes.Size | str = sizes.text_md,
-        font: fonts.Font | str | list[fonts.Font | str] = (
-            fonts.GoogleFont("Quicksand"),
-            "ui-sans-serif",
-            "sans-serif",
-        ),
-        font_mono: fonts.Font | str | list[fonts.Font | str] = (
-            fonts.GoogleFont("IBM Plex Mono"),
-            "ui-monospace",
-            "monospace",
-        ),
-        # Custom CSS to set the background image
-        css: str = """
-            .gradio-container {
-                background: url('https://img3.gelbooru.com//samples/fa/ae/sample_faae35e59bc8baf2fe77f4d14dc79454.jpg') no-repeat center center fixed;
-                background-size: cover;
-            }
-        """,
-    ):
-        super().__init__(
-            primary_hue=primary_hue,
-            secondary_hue=secondary_hue,
-            neutral_hue=neutral_hue,
-            spacing_size=spacing_size,
-            radius_size=radius_size,
-            text_size=text_size,
-            font=font,
-            font_mono=font_mono,
-            css=css,
-        )
 
-# Instantiate the Seafoam theme
-seafoam = Seafoam()
+
+
 
 
 
@@ -295,7 +253,7 @@ def main():
 
     
 
-    with gr.Blocks(title='RVC Inference GUI', theme=seafoam) as app:
+    with gr.Blocks(title='RVC Inference GUI') as app:
         with gr.Column(elem_classes="gradio-container"):
             gr.Markdown("<h1 style='text-align:center;'>RVC Inference EasyGUI</h1>")
             build_main_tab()
