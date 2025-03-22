@@ -115,13 +115,10 @@ def build_main_tab():
     with gr.Tab("Main"):
         with gr.Accordion('Main Options', open=True):
             with gr.Row():
-                with gr.Column():
-                    rvc_model = gr.Dropdown(voice_models, label='Voice Models',
-                                            info='Models folder "AICoverGen --> rvc_models". After new models are added, click the refresh button.')
-                    ref_btn = gr.Button('Refresh Models 🔁', variant='primary')
+                rvc_model = gr.Dropdown(voice_models, label='Voice Models')
+                ref_btn = gr.Button('Refresh Models 🔁', variant='primary')
                 with gr.Column() as yt_link_col:
-                    song_input = gr.Text(label='Song input',
-                                         info='Link to a song on YouTube or full path to a local file. For file upload, click the button below.')
+                    song_input = gr.Text(label='Song input')
                     show_file_upload_button = gr.Button('Upload file instead')
                 with gr.Column(visible=False) as file_upload_col:
                     local_file = gr.File(label='Audio file')
@@ -130,32 +127,23 @@ def build_main_tab():
                     song_input_file.upload(process_file_upload, inputs=[song_input_file],
                                            outputs=[local_file, song_input])
                 with gr.Column():
-                    pitch = gr.Slider(-3, 3, value=0, step=1, label='Pitch Change (Vocals ONLY)',
-                                      info='Generally, use 1 for male to female conversions and -1 for vice-versa. (Octaves)')
+                    pitch = gr.Slider(-3, 3, value=0, step=1, label='Pitch Change (Vocals ONLY)')
             show_file_upload_button.click(swap_visibility,
                                           outputs=[file_upload_col, yt_link_col, song_input, local_file])
             show_yt_link_button.click(swap_visibility,
                                       outputs=[yt_link_col, file_upload_col, song_input, local_file])
         with gr.Accordion('Voice Conversion Options', open=False):
             with gr.Row():
-                index_rate = gr.Slider(0, 1, value=0.5, label='Index Rate',
-                                       info="Controls how much of the AI voice's accent to keep in the vocals")
-                filter_radius = gr.Slider(0, 7, value=3, step=1, label='Filter Radius',
-                                          info='If >=3: apply median filtering to the harvested pitch results. Can reduce breathiness')
-                rms_mix_rate = gr.Slider(0, 1, value=0.25, label='RMS Mix Rate',
-                                         info="Control how much to mimic the original vocal's loudness (0) or a fixed loudness (1)")
-                protect = gr.Slider(0, 0.5, value=0.33, label='Protect Rate',
-                                    info='Protect voiceless consonants and breath sounds. Set to 0.5 to disable.')
+                index_rate = gr.Slider(0, 1, value=0.5, label='Index Rate')
+                filter_radius = gr.Slider(0, 7, value=3, step=1, label='Filter Radius')
+            with gr.Row():
+                rms_mix_rate = gr.Slider(0, 1, value=0.25, label='RMS Mix Rate')
+                protect = gr.Slider(0, 0.5, value=0.33, label='Protect Rate')
                 with gr.Column():
-                    f0_method = gr.Dropdown(['rmvpe', 'mangio-crepe'], value='rmvpe',
-                                            label='Pitch Detection Algorithm',
-                                            info='Best option is rmvpe (clarity in vocals), then mangio-crepe (smoother vocals)')
-                    crepe_hop_length = gr.Slider(32, 320, value=128, step=1, visible=False,
-                                                 label='Crepe Hop Length',
-                                                 info='Lower values lead to longer conversions and higher risk of voice cracks, but better pitch accuracy.')
+                    f0_method = gr.Dropdown(['rmvpe', 'mangio-crepe'], value='rmvpe', label='Pitch Detection Algorithm')
+                    crepe_hop_length = gr.Slider(32, 320, value=128, step=1, visible=False, label='Crepe Hop Length')
                     f0_method.change(show_hop_slider, inputs=f0_method, outputs=crepe_hop_length)
-            keep_files = gr.Checkbox(label='Keep Intermediate Files',
-                                     info='Keep all audio files generated in the song_output/id directory, e.g. Isolated Vocals/Instrumentals. Leave unchecked to save space')
+            keep_files = gr.Checkbox(label='Keep Intermediate Files')
         with gr.Accordion('Audio Mixing Options', open=False):
             gr.Markdown('### Volume Change (decibels)')
             with gr.Row():
@@ -163,8 +151,7 @@ def build_main_tab():
                 backup_gain = gr.Slider(-20, 20, value=0, step=1, label='Backup Vocals')
                 inst_gain = gr.Slider(-20, 20, value=0, step=1, label='Music')
             gr.Markdown('### Audio Output Format')
-            output_format = gr.Dropdown(['mp3', 'wav'], value='mp3', label='Output File Type',
-                                        info='mp3: small file size, decent quality. wav: Large file size, best quality')
+            output_format = gr.Dropdown(['mp3', 'wav'], value='mp3', label='Output File Type')
         with gr.Row():
             clear_btn = gr.ClearButton(value='Clear', components=[song_input, rvc_model, keep_files, local_file])
             generate_btn = gr.Button("Generate", variant='primary')
@@ -183,6 +170,7 @@ def build_main_tab():
             outputs=[pitch, main_gain, backup_gain, inst_gain, index_rate, filter_radius, rms_mix_rate,
                      protect, f0_method, crepe_hop_length, output_format, ai_cover]
         )
+
 
 
 def build_download_tab():
@@ -247,6 +235,47 @@ def build_upload_tab():
 
 # ---------------- Main Function ----------------
 
+custom_css = """
+    /* Set a full-page background image with a fallback color */
+    body {
+        background: url('https://img3.gelbooru.com//samples/fa/ae/sample_faae35e59bc8baf2fe77f4d14dc79454.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Main container with a translucent background for better readability */
+    .gradio-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: rgba(240, 242, 245, 0.85); /* Semi-transparent overlay */
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Typography enhancements */
+    h1, h2, h3, .tabitem, .accordion {
+        font-family: inherit; /* Inherits from body font-family */
+        color: inherit;
+    }
+    
+    /* Button styling with hover effect */
+    .gr-button {
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .gr-button:hover {
+        background-color: #e0e0e0;
+    }
+    
+    /* Consistent spacing for inputs */
+    .gr-text, .gr-dropdown, .gr-slider {
+        margin-bottom: 10px;
+    }
+    """
+
+
 def main():
     parser = ArgumentParser(description='RVC Inference GUI.')
     parser.add_argument("--share", action="store_true", dest="share_enabled", default=False, help="Enable sharing")
@@ -255,14 +284,7 @@ def main():
     parser.add_argument('--listen-port', type=int, help='The listening port that the server will use.')
     args = parser.parse_args()
 
-    # Custom CSS for a cleaner and more modern look
-    custom_css = """
-    body { background-color: #f0f2f5; }
-    .gradio-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    h1, h2, h3, .tabitem, .accordion { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .gr-button { border-radius: 5px; }
-    .gr-text, .gr-dropdown, .gr-slider { margin-bottom: 10px; }
-    """
+    
 
     with gr.Blocks(title='RVC Inference GUI', css=custom_css) as app:
         with gr.Column(elem_classes="gradio-container"):
