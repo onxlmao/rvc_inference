@@ -1,12 +1,16 @@
+pip>=23.3,<24.1
+omegaconf>=2.0.6
+onnxruntime; sys_platform == 'darwin'
+onnxruntime-gpu; sys_platform != 'darwin'
+
 deemix
-fairseq==0.12.2
+fairseq @ git+https://github.com/One-sixth/fairseq.git
 faiss-cpu==1.7.3
 ffmpeg-python>=0.2.0
-gradio==3.39.0
+gradio
 lib==4.0.0
-librosa==0.9.1
+librosa
 numpy==1.23.5
-onnxruntime_gpu
 praat-parselmouth>=0.4.2
 pedalboard==0.7.7
 pydub==0.25.1
@@ -15,8 +19,9 @@ Requests==2.31.0
 scipy==1.11.1
 soundfile==0.12.1
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.0.1+cu118
-torchcrepe==0.0.20
-tqdm==4.65.0
+torch
+torchcrepe==0.0.23
+tqdm
 yt_dlp==2023.7.6
+matplotlib==3.7.2
 sox==1.4.1
