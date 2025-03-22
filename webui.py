@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 
 import gradio as gr
 
-from main import song_cover_pipeline
+from src.main import song_cover_pipeline
 
 BASE_DIR = os.getcwd()
 
