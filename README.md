@@ -1,7 +1,7 @@
 
 # RVC Inference GUI
 
-RVC Inference GUI is a user-friendly graphical interface designed to facilitate inference using Retrievable Voice Conversion (RVC) models. This tool simplifies the process of voice conversion by providing an intuitive platform for users to interact with RVC models without delving into complex command-line operations.
+RVC Inference GUI is a user-friendly graphical interface designed to facilitate inference using Retrieval based Voice  Conversion (RVC) models. This tool simplifies the process of voice conversion by providing an intuitive platform for users to interact with RVC models without delving into complex command-line operations.
 
 ## Features
 
