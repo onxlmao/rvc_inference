@@ -9,9 +9,8 @@ import gradio as gr
 
 from main import song_cover_pipeline
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.getcwd()
 
-mdxnet_models_dir = os.path.join(BASE_DIR, 'mdxnet_models')
 rvc_models_dir = os.path.join(BASE_DIR, 'rvc_models')
 output_dir = os.path.join(BASE_DIR, 'song_output')
 
@@ -24,18 +23,8 @@ def get_current_models(models_dir):
 
 def update_models_list():
     models_l = get_current_models(rvc_models_dir)
-    return gr.Dropdown.update(choices=models_l)
+    return gr.update(choices=models_l)
 
-
-def load_public_models():
-    models_table = []
-    for model in public_models['voice_models']:
-        if not model['name'] in voice_models:
-            model = [model['name'], model['description'], model['credit'], model['url'], ', '.join(model['tags'])]
-            models_table.append(model)
-
-    tags = list(public_models['tags'].keys())
-    return gr.DataFrame.update(value=models_table), gr.CheckboxGroup.update(choices=tags)
 
 
 def extract_zip(extraction_folder, zip_name):
@@ -103,40 +92,9 @@ def upload_local_model(zip_path, dir_name, progress=gr.Progress()):
         raise gr.Error(str(e))
 
 
-def filter_models(tags, query):
-    models_table = []
-
-    # no filter
-    if len(tags) == 0 and len(query) == 0:
-        for model in public_models['voice_models']:
-            models_table.append([model['name'], model['description'], model['credit'], model['url'], model['tags']])
-
-    # filter based on tags and query
-    elif len(tags) > 0 and len(query) > 0:
-        for model in public_models['voice_models']:
-            if all(tag in model['tags'] for tag in tags):
-                model_attributes = f"{model['name']} {model['description']} {model['credit']} {' '.join(model['tags'])}".lower()
-                if query.lower() in model_attributes:
-                    models_table.append([model['name'], model['description'], model['credit'], model['url'], model['tags']])
-
-    # filter based on only tags
-    elif len(tags) > 0:
-        for model in public_models['voice_models']:
-            if all(tag in model['tags'] for tag in tags):
-                models_table.append([model['name'], model['description'], model['credit'], model['url'], model['tags']])
-
-    # filter based on only query
-    else:
-        for model in public_models['voice_models']:
-            model_attributes = f"{model['name']} {model['description']} {model['credit']} {' '.join(model['tags'])}".lower()
-            if query.lower() in model_attributes:
-                models_table.append([model['name'], model['description'], model['credit'], model['url'], model['tags']])
-
-    return gr.DataFrame.update(value=models_table)
-
 
 def pub_dl_autofill(pub_models, event: gr.SelectData):
-    return gr.Text.update(value=pub_models.loc[event.index[0], 'URL']), gr.Text.update(value=pub_models.loc[event.index[0], 'Model Name'])
+    return gr.update(value=pub_models.loc[event.index[0], 'URL']), gr.Text.update(value=pub_models.loc[event.index[0], 'Model Name'])
 
 
 def swap_visibility():
@@ -155,7 +113,7 @@ def show_hop_slider(pitch_detection_algo):
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Generate a AI cover song in the song_output/id directory.', add_help=True)
+    parser = ArgumentParser(description='RVC Inference GUI.', add_help=True)
     parser.add_argument("--share", action="store_true", dest="share_enabled", default=False, help="Enable sharing")
     parser.add_argument("--listen", action="store_true", default=False, help="Make the WebUI reachable from your local network.")
     parser.add_argument('--listen-host', type=str, help='The hostname that the server will use.')
@@ -166,12 +124,12 @@ if __name__ == '__main__':
     with open(os.path.join(rvc_models_dir, 'public_models.json'), encoding='utf8') as infile:
         public_models = json.load(infile)
 
-    with gr.Blocks(title='AICoverGenWebUI') as app:
+    with gr.Blocks(title='RVC Inference GUI') as app:
 
-        gr.Label('AICoverGen WebUI created with ❤️', show_label=False)
+        gr.Label('RVC Inference GUI created with ❤️', show_label=False)
 
         # main tab
-        with gr.Tab("Generate"):
+        with gr.Tab("main"):
 
             with gr.Accordion('Main Options'):
                 with gr.Row():
@@ -284,15 +242,7 @@ if __name__ == '__main__':
                     download_pub_btn = gr.Button('Download 🌐', variant='primary', scale=19)
                     pub_dl_output_message = gr.Text(label='Output Message', interactive=False, scale=20)
 
-                filter_tags = gr.CheckboxGroup(value=[], label='Show voice models with tags', choices=[])
-                search_query = gr.Text(label='Search')
-                load_public_models_button = gr.Button(value='Initialize public models table', variant='primary')
-
-                public_models_table = gr.DataFrame(value=[], headers=['Model Name', 'Description', 'Credit', 'URL', 'Tags'], label='Available Public Models', interactive=False)
-                public_models_table.select(pub_dl_autofill, inputs=[public_models_table], outputs=[pub_zip_link, pub_model_name])
-                load_public_models_button.click(load_public_models, outputs=[public_models_table, filter_tags])
-                search_query.change(filter_models, inputs=[filter_tags, search_query], outputs=public_models_table)
-                filter_tags.change(filter_models, inputs=[filter_tags, search_query], outputs=public_models_table)
+                
                 download_pub_btn.click(download_online_model, inputs=[pub_zip_link, pub_model_name], outputs=pub_dl_output_message)
 
         # Upload tab
