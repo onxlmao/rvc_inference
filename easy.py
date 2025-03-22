@@ -4,6 +4,8 @@ import shutil
 import urllib.request
 import zipfile
 from argparse import ArgumentParser
+from gradio.themes.base import Base
+from gradio.themes.utils import colors, fonts, sizes
 
 import gradio as gr
 from src.main import song_cover_pipeline
@@ -235,45 +237,52 @@ def build_upload_tab():
 
 # ---------------- Main Function ----------------
 
-custom_css = """
-    /* Set a full-page background image with a fallback color */
-    body {
-        background: url('https://img3.gelbooru.com//samples/fa/ae/sample_faae35e59bc8baf2fe77f4d14dc79454.jpg') no-repeat center center fixed;
-        background-size: cover;
-        color: #333;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    /* Main container with a translucent background for better readability */
-    .gradio-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: rgba(240, 242, 245, 0.85); /* Semi-transparent overlay */
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Typography enhancements */
-    h1, h2, h3, .tabitem, .accordion {
-        font-family: inherit; /* Inherits from body font-family */
-        color: inherit;
-    }
-    
-    /* Button styling with hover effect */
-    .gr-button {
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-    .gr-button:hover {
-        background-color: #e0e0e0;
-    }
-    
-    /* Consistent spacing for inputs */
-    .gr-text, .gr-dropdown, .gr-slider {
-        margin-bottom: 10px;
-    }
-    """
+# Define the Seafoam theme by extending the Base theme
+class Seafoam(Base):
+    def __init__(
+        self,
+        *,
+        primary_hue: colors.Color | str = colors.emerald,
+        secondary_hue: colors.Color | str = colors.blue,
+        neutral_hue: colors.Color | str = colors.gray,
+        spacing_size: sizes.Size | str = sizes.spacing_md,
+        radius_size: sizes.Size | str = sizes.radius_md,
+        text_size: sizes.Size | str = sizes.text_md,
+        font: fonts.Font | str | list[fonts.Font | str] = (
+            fonts.GoogleFont("Quicksand"),
+            "ui-sans-serif",
+            "sans-serif",
+        ),
+        font_mono: fonts.Font | str | list[fonts.Font | str] = (
+            fonts.GoogleFont("IBM Plex Mono"),
+            "ui-monospace",
+            "monospace",
+        ),
+        # Custom CSS to set the background image
+        css: str = """
+            .gradio-container {
+                background: url('https://img3.gelbooru.com//samples/fa/ae/sample_faae35e59bc8baf2fe77f4d14dc79454.jpg') no-repeat center center fixed;
+                background-size: cover;
+            }
+        """,
+    ):
+        super().__init__(
+            primary_hue=primary_hue,
+            secondary_hue=secondary_hue,
+            neutral_hue=neutral_hue,
+            spacing_size=spacing_size,
+            radius_size=radius_size,
+            text_size=text_size,
+            font=font,
+            font_mono=font_mono,
+            css=css,
+        )
+
+# Instantiate the Seafoam theme
+seafoam = Seafoam()
+
+
+
 
 
 def main():
@@ -286,7 +295,7 @@ def main():
 
     
 
-    with gr.Blocks(title='RVC Inference GUI', css=custom_css) as app:
+    with gr.Blocks(title='RVC Inference GUI', theme=seafoam) as app:
         with gr.Column(elem_classes="gradio-container"):
             gr.Markdown("<h1 style='text-align:center;'>RVC Inference EasyGUI</h1>")
             build_main_tab()
