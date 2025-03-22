@@ -22,6 +22,5 @@ soundfile==0.12.1
 torch
 torchcrepe==0.0.23
 tqdm
-yt_dlp==2023.7.6
+yt_dlp
 matplotlib==3.7.2
-sox==1.4.1
