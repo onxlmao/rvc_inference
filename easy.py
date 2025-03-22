@@ -112,8 +112,8 @@ def show_hop_slider(pitch_detection_algo):
 
 def build_main_tab():
     voice_models = get_current_models(rvc_models_dir)
-    with gr.Tab("main"):
-        with gr.Accordion('Main Options'):
+    with gr.Tab("Main"):
+        with gr.Accordion('Main Options', open=True):
             with gr.Row():
                 with gr.Column():
                     rvc_model = gr.Dropdown(voice_models, label='Voice Models',
@@ -136,34 +136,34 @@ def build_main_tab():
                                           outputs=[file_upload_col, yt_link_col, song_input, local_file])
             show_yt_link_button.click(swap_visibility,
                                       outputs=[yt_link_col, file_upload_col, song_input, local_file])
-        with gr.Accordion('Voice conversion options', open=False):
+        with gr.Accordion('Voice Conversion Options', open=False):
             with gr.Row():
                 index_rate = gr.Slider(0, 1, value=0.5, label='Index Rate',
                                        info="Controls how much of the AI voice's accent to keep in the vocals")
-                filter_radius = gr.Slider(0, 7, value=3, step=1, label='Filter radius',
+                filter_radius = gr.Slider(0, 7, value=3, step=1, label='Filter Radius',
                                           info='If >=3: apply median filtering to the harvested pitch results. Can reduce breathiness')
-                rms_mix_rate = gr.Slider(0, 1, value=0.25, label='RMS mix rate',
+                rms_mix_rate = gr.Slider(0, 1, value=0.25, label='RMS Mix Rate',
                                          info="Control how much to mimic the original vocal's loudness (0) or a fixed loudness (1)")
-                protect = gr.Slider(0, 0.5, value=0.33, label='Protect rate',
+                protect = gr.Slider(0, 0.5, value=0.33, label='Protect Rate',
                                     info='Protect voiceless consonants and breath sounds. Set to 0.5 to disable.')
                 with gr.Column():
                     f0_method = gr.Dropdown(['rmvpe', 'mangio-crepe'], value='rmvpe',
-                                            label='Pitch detection algorithm',
+                                            label='Pitch Detection Algorithm',
                                             info='Best option is rmvpe (clarity in vocals), then mangio-crepe (smoother vocals)')
                     crepe_hop_length = gr.Slider(32, 320, value=128, step=1, visible=False,
-                                                 label='Crepe hop length',
+                                                 label='Crepe Hop Length',
                                                  info='Lower values lead to longer conversions and higher risk of voice cracks, but better pitch accuracy.')
                     f0_method.change(show_hop_slider, inputs=f0_method, outputs=crepe_hop_length)
-            keep_files = gr.Checkbox(label='Keep intermediate files',
+            keep_files = gr.Checkbox(label='Keep Intermediate Files',
                                      info='Keep all audio files generated in the song_output/id directory, e.g. Isolated Vocals/Instrumentals. Leave unchecked to save space')
-        with gr.Accordion('Audio mixing options', open=False):
+        with gr.Accordion('Audio Mixing Options', open=False):
             gr.Markdown('### Volume Change (decibels)')
             with gr.Row():
                 main_gain = gr.Slider(-20, 20, value=0, step=1, label='Main Vocals')
                 backup_gain = gr.Slider(-20, 20, value=0, step=1, label='Backup Vocals')
                 inst_gain = gr.Slider(-20, 20, value=0, step=1, label='Music')
             gr.Markdown('### Audio Output Format')
-            output_format = gr.Dropdown(['mp3', 'wav'], value='mp3', label='Output file type',
+            output_format = gr.Dropdown(['mp3', 'wav'], value='mp3', label='Output File Type',
                                         info='mp3: small file size, decent quality. wav: Large file size, best quality')
         with gr.Row():
             clear_btn = gr.ClearButton(value='Clear', components=[song_input, rvc_model, keep_files, local_file])
@@ -186,15 +186,15 @@ def build_main_tab():
 
 
 def build_download_tab():
-    with gr.Tab('Download model'):
-        with gr.Tab('From HuggingFace/Pixeldrain URL'):
+    with gr.Tab('Download Model'):
+        with gr.Tab('From URL'):
             with gr.Row():
                 model_zip_link = gr.Text(
-                    label='Download link to model',
+                    label='Download Link to Model',
                     info='Should be a zip file containing a .pth model file and an optional .index file.'
                 )
                 model_name = gr.Text(
-                    label='Name your model',
+                    label='Name Your Model',
                     info='Give your new model a unique name from your other voice models.'
                 )
             with gr.Row():
@@ -213,14 +213,14 @@ def build_download_tab():
                 download_online_model,
             )
         with gr.Tab('From Public Index'):
-            gr.Markdown('## How to use')
+            gr.Markdown('## How to Use')
             gr.Markdown('- Click Initialize public models table')
             gr.Markdown('- Filter models using tags or search bar')
             gr.Markdown('- Select a row to autofill the download link and model name')
             gr.Markdown('- Click Download')
             with gr.Row():
-                pub_zip_link = gr.Text(label='Download link to model')
-                pub_model_name = gr.Text(label='Model name')
+                pub_zip_link = gr.Text(label='Download Link to Model')
+                pub_model_name = gr.Text(label='Model Name')
             with gr.Row():
                 download_pub_btn = gr.Button('Download 🌐', variant='primary', scale=19)
                 pub_dl_output_message = gr.Text(label='Output Message', interactive=False, scale=20)
@@ -228,18 +228,18 @@ def build_download_tab():
 
 
 def build_upload_tab():
-    with gr.Tab('Upload model'):
-        gr.Markdown('## Upload locally trained RVC v2 model and index file')
+    with gr.Tab('Upload Model'):
+        gr.Markdown('## Upload Locally Trained RVC v2 Model and Index File')
         gr.Markdown('- Find model file (weights folder) and optional index file (logs/[name] folder)')
-        gr.Markdown('- Compress files into zip file')
-        gr.Markdown('- Upload zip file and give unique name for voice')
-        gr.Markdown('- Click Upload model')
+        gr.Markdown('- Compress files into a zip file')
+        gr.Markdown('- Upload zip file and give a unique name for the voice')
+        gr.Markdown('- Click Upload Model')
         with gr.Row():
             with gr.Column():
-                zip_file = gr.File(label='Zip file')
-            local_model_name = gr.Text(label='Model name')
+                zip_file = gr.File(label='Zip File')
+            local_model_name = gr.Text(label='Model Name')
         with gr.Row():
-            model_upload_button = gr.Button('Upload model', variant='primary', scale=19)
+            model_upload_button = gr.Button('Upload Model', variant='primary', scale=19)
             local_upload_output_message = gr.Text(label='Output Message', interactive=False, scale=20)
             model_upload_button.click(upload_local_model, inputs=[zip_file, local_model_name],
                                       outputs=local_upload_output_message)
@@ -255,13 +255,21 @@ def main():
     parser.add_argument('--listen-port', type=int, help='The listening port that the server will use.')
     args = parser.parse_args()
 
+    # Custom CSS for a cleaner and more modern look
+    custom_css = """
+    body { background-color: #f0f2f5; }
+    .gradio-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    h1, h2, h3, .tabitem, .accordion { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .gr-button { border-radius: 5px; }
+    .gr-text, .gr-dropdown, .gr-slider { margin-bottom: 10px; }
+    """
 
-
-    with gr.Blocks(title='RVC Inference GUI') as app:
-        gr.Label('RVC Inference EasyGUI ver created with ❤️', show_label=False)
-        build_main_tab()
-        build_download_tab()
-        build_upload_tab()
+    with gr.Blocks(title='RVC Inference GUI', css=custom_css) as app:
+        with gr.Column(elem_classes="gradio-container"):
+            gr.Markdown("<h1 style='text-align:center;'>RVC Inference EasyGUI</h1>")
+            build_main_tab()
+            build_download_tab()
+            build_upload_tab()
 
     app.launch(
         share=args.share_enabled,
